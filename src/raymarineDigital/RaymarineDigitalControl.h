@@ -29,82 +29,39 @@
  ***************************************************************************
  */
 
-#if !defined(DEFINE_RADAR)
-#ifndef _RADARTYPE_H_
-#define _RADARTYPE_H_
+#ifndef _RAYMARINE_DIGITAL_CONTROL_H_
+#define _RAYMARINE_DIGITAL_CONTROL_H_
 
 #include "RadarInfo.h"
 #include "pi_common.h"
+#include "socketutil.h"
 
-#include "garminhd/GarminHDControl.h"
-#include "garminhd/GarminHDControlsDialog.h"
-#include "garminhd/GarminHDReceive.h"
+PLUGIN_BEGIN_NAMESPACE
 
-#include "garminxhd/GarminxHDControl.h"
-#include "garminxhd/GarminxHDControlsDialog.h"
-#include "garminxhd/GarminxHDReceive.h"
+class RaymarineDigitalControl : public RadarControl {
+ public:
+  RaymarineDigitalControl();
+  ~RaymarineDigitalControl();
 
-#include "raymarineDigital/RaymarineDigitalControl.h"
-#include "raymarineDigital/RaymarineDigitalControlsDialog.h"
-#include "raymarineDigital/RaymarineDigitalReceive.h"
+  bool Init(radar_pi *pi, RadarInfo *ri, NetworkAddress &interfaceAddress, NetworkAddress &radarAddress);
+  void RadarTxOff();
+  void RadarTxOn();
+  bool RadarStayAlive();
+  bool SetRange(int meters);
 
-#include "navico/NavicoControl.h"
-#include "navico/NavicoControlsDialog.h"
-#include "navico/NavicoReceive.h"
+  bool SetControlValue(ControlType controlType, RadarControlItem &item, RadarControlButton *button);
 
-#include "emulator/EmulatorControl.h"
-#include "emulator/EmulatorControlsDialog.h"
-#include "emulator/EmulatorReceive.h"
+ private:
+  void logBinaryData(const wxString &what, const void *data, int size);
+  bool TransmitCmd(const void *msg, int size);
 
-#endif /* _RADARTYPE_H_ */
+  radar_pi *m_pi;
+  RadarInfo *m_ri;
+  struct sockaddr_in m_addr;
+  SOCKET m_radar_socket;
+  wxString m_name;
+};
 
-#define DEFINE_RADAR(t, x, s, l, a, b, c, d)
-#define INITIALIZE_RADAR
-#endif
+PLUGIN_END_NAMESPACE
 
-#if !defined(DEFINE_RANGE_METRIC)
-#define DEFINE_RANGE_METRIC(t, x)
-#endif
-
-#if !defined(DEFINE_RANGE_MIXED)
-#define DEFINE_RANGE_MIXED(t, x)
-#endif
-
-#if !defined(DEFINE_RANGE_NAUTIC)
-#define DEFINE_RANGE_NAUTIC(t, x)
-#endif
-
-#ifndef SPOKES_MAX
-#define SPOKES_MAX 0
-#endif
-
-#ifndef SPOKE_LEN_MAX
-#define SPOKE_LEN_MAX 0
-#endif
-
-#ifndef RO_SINGLE
-#define RO_SINGLE (0)
-#define RO_PRIMARY (1)
-#define RO_SECONDARY (2)
-#endif
-
-#include "garminhd/garminhdtype.h"
-#include "garminxhd/garminxhdtype.h"
-
-#include "navico/br24type.h"
-#include "navico/br3gtype.h"
-#include "navico/br4gatype.h"
-#include "navico/br4gbtype.h"
-
-#include "navico/haloatype.h"
-#include "navico/halobtype.h"
-
-#include "raymarineDigital/RaymarineDigitalType.h"
-
-#include "emulator/emulatortype.h"
-
-#undef DEFINE_RADAR  // Prepare for next inclusion
-#undef INITIALIZE_RADAR
-#undef DEFINE_RANGE_METRIC
-#undef DEFINE_RANGE_MIXED
-#undef DEFINE_RANGE_NAUTIC
+#endif /* _RAYMARINE_DIGITAL_CONTROL_H_ */

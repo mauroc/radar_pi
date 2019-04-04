@@ -60,6 +60,17 @@ SET(SRC_GARMIN_XHD
             src/garminxhd/garminxhdtype.h
 )
 
+SET(SRC_RAYMARINE_DIGITAL
+            src/raymarineDigital/RaymarineDigitalControl.cpp        
+            src/raymarineDigital/RaymarineDigitalControl.h          
+            src/raymarineDigital/RaymarineDigitalControlSet.h       
+            src/raymarineDigital/RaymarineDigitalControlsDialog.cpp 
+            src/raymarineDigital/RaymarineDigitalControlsDialog.h   
+            src/raymarineDigital/RaymarineDigitalReceive.cpp        
+            src/raymarineDigital/RaymarineDigitalReceive.h          
+            src/raymarineDigital/RaymarineDigitalType.h
+)
+
 SET(SRC_NAVICO
             src/navico/br24type.h
             src/navico/br3gtype.h
@@ -163,7 +174,7 @@ INCLUDE_DIRECTORIES(src/nmea0183)
 INCLUDE_DIRECTORIES(src/wxJSON)
 INCLUDE_DIRECTORIES(src)
 
-ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_RADAR} ${SRC_NMEA0183} ${SRC_JSON} ${SRC_EMULATOR} ${SRC_GARMIN_HD} ${SRC_GARMIN_XHD} ${SRC_NAVICO})
+ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_RADAR} ${SRC_NMEA0183} ${SRC_JSON} ${SRC_EMULATOR} ${SRC_GARMIN_HD} ${SRC_GARMIN_XHD} ${SRC_NAVICO} ${SRC_RAYMARINE_DIGITAL})
 
 
 INCLUDE("cmake/PluginInstall.cmake")
