@@ -153,6 +153,8 @@ SET(SRC_NMEA0183
         src/nmea0183/hdg.cpp
         src/nmea0183/hdm.hpp
         src/nmea0183/hdm.cpp
+        src/nmea0183/vhw.hpp
+        src/nmea0183/vhw.cpp
 )
 SET(SRC_JSON
         src/wxJSON/jsonreader.cpp

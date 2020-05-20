@@ -2091,6 +2091,8 @@ void radar_pi::SetNMEASentence(wxString &sentence) {
       hdm = m_NMEA0183.Hdm.DegreesMagnetic;
     } else if (m_NMEA0183.LastSentenceIDReceived == _T("HDT") && m_NMEA0183.Parse() && !wxIsNaN(m_NMEA0183.Hdt.DegreesTrue)) {
       hdt = m_NMEA0183.Hdt.DegreesTrue;
+    } else if (m_NMEA0183.LastSentenceIDReceived == _T("VHM") && m_NMEA0183.Parse() && !wxIsNaN(m_NMEA0183.Vhw.DegreesMagnetic)) {
+      hdm = m_NMEA0183.Vhw.DegreesMagnetic;
     }
   }
 

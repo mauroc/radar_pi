@@ -29,10 +29,10 @@
  *         "It is BSD license, do with it what you will"                   *
  */
 
-#if !defined(NMEA_0183_CLASS_HEADER)
-#define NMEA_0183_CLASS_HEADER
+#if ! defined( VHW_CLASS_HEADER )
+#define VHW_CLASS_HEADER
 
-#include "pi_common.h"
+PLUGIN_BEGIN_NAMESPACE
 
 /*
 ** Author: Samuel R. Blackburn
@@ -42,70 +42,39 @@
 ** You can use it any way you like.
 */
 
-/*
-** General Purpose Classes
-*/
+class VHW : public RESPONSE
+{
+   //DECLARE_DYNAMIC( VHW )
 
-#include "Response.hpp"
-#include "Sentence.hpp"
+   public:
 
-/*
-** Response Classes
-*/
+      VHW();
+     ~VHW();
 
-#include "hdg.hpp"
-#include "hdm.hpp"
-#include "hdt.hpp"
-#include "vhw.hpp"
+      /*
+      ** Data
+      */
 
-PLUGIN_BEGIN_NAMESPACE
+      double DegreesTrue;
+      double DegreesMagnetic;
+      double Knots;
+      double KilometersPerHour;
 
-WX_DECLARE_LIST(RESPONSE, MRL);
+      /*
+      ** Methods
+      */
 
-class NMEA0183 {
- private:
-  SENTENCE sentence;
+      virtual void Empty( void );
+      virtual bool Parse( const SENTENCE& sentence );
+      virtual bool Write( SENTENCE& sentence );
 
-  void initialize(void);
+      /*
+      ** Operators
+      */
 
- protected:
-  MRL response_table;
-
-  void set_container_pointers(void);
-  void sort_response_table(void);
-
- public:
-  NMEA0183();
-  virtual ~NMEA0183();
-
-  wxArrayString GetRecognizedArray(void);
-
-  /*
-  ** NMEA 0183 Sentences we understand
-  */
-
-  HDM Hdm;
-  HDG Hdg;
-  HDT Hdt;
-  VHW Vhw;
-
-  wxString ErrorMessage;            // Filled when Parse returns FALSE
-  wxString LastSentenceIDParsed;    // ID of the lst sentence successfully parsed
-  wxString LastSentenceIDReceived;  // ID of the last sentence received, may not have parsed successfully
-
-  wxString TalkerID;
-  wxString ExpandedTalkerID;
-
-  //      MANUFACTURER_LIST Manufacturers;
-
-  virtual bool IsGood(void) const;
-  virtual bool Parse(void);
-  virtual bool PreParse(void);
-
-  NMEA0183& operator<<(wxString& source);
-  NMEA0183& operator>>(wxString& destination);
+      virtual const VHW& operator = ( const VHW& source );
 };
 
 PLUGIN_END_NAMESPACE
 
-#endif  // NMEA_0183_CLASS_HEADER
+#endif // VHW_CLASS_HEADER

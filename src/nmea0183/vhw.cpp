@@ -29,10 +29,9 @@
  *         "It is BSD license, do with it what you will"                   *
  */
 
-#if !defined(NMEA_0183_CLASS_HEADER)
-#define NMEA_0183_CLASS_HEADER
+#include "nmea0183.h"
 
-#include "pi_common.h"
+PLUGIN_BEGIN_NAMESPACE
 
 /*
 ** Author: Samuel R. Blackburn
@@ -42,70 +41,105 @@
 ** You can use it any way you like.
 */
 
-/*
-** General Purpose Classes
-*/
+//IMPLEMENT_DYNAMIC( VHW, RESPONSE )
 
-#include "Response.hpp"
-#include "Sentence.hpp"
+VHW::VHW()
+{
+   Mnemonic = _T("VHW");
+   Empty();
+}
 
-/*
-** Response Classes
-*/
+VHW::~VHW()
+{
+   Mnemonic.Empty();
+   Empty();
+}
 
-#include "hdg.hpp"
-#include "hdm.hpp"
-#include "hdt.hpp"
-#include "vhw.hpp"
+void VHW::Empty( void )
+{
+//   ASSERT_VALID( this );
 
-PLUGIN_BEGIN_NAMESPACE
+   DegreesTrue       = 0.0;
+   DegreesMagnetic   = 0.0;
+   Knots             = 0.0;
+   KilometersPerHour = 0.0;
+}
 
-WX_DECLARE_LIST(RESPONSE, MRL);
+bool VHW::Parse( const SENTENCE& sentence )
+{
+//   ASSERT_VALID( this );
 
-class NMEA0183 {
- private:
-  SENTENCE sentence;
+   /*
+   ** VHW - Water speed and heading
+   **
+   **        1   2 3   4 5   6 7   8 9
+   **        |   | |   | |   | |   | |
+   ** $--VHW,x.x,T,x.x,M,x.x,N,x.x,K*hh<CR><LF>
+   **
+   ** Field Number: 
+   **  1) Degress True
+   **  2) T = True
+   **  3) Degrees Magnetic
+   **  4) M = Magnetic
+   **  5) Knots (speed of vessel relative to the water)
+   **  6) N = Knots
+   **  7) Kilometers (speed of vessel relative to the water)
+   **  8) K = Kilometers
+   **  9) Checksum
+   */
 
-  void initialize(void);
+   /*
+   ** First we check the checksum...
+   */
 
- protected:
-  MRL response_table;
+   if ( sentence.IsChecksumBad( 9 ) == TRUE )
+   {
+      SetErrorMessage( _T("Invalid Checksum") );
+      return( FALSE );
+   } 
 
-  void set_container_pointers(void);
-  void sort_response_table(void);
+   DegreesTrue       = sentence.Double( 1 );
+   DegreesMagnetic   = sentence.Double( 3 );
+   Knots             = sentence.Double( 5 );
+   KilometersPerHour = sentence.Double( 7 );
 
- public:
-  NMEA0183();
-  virtual ~NMEA0183();
+   return( TRUE );
+}
 
-  wxArrayString GetRecognizedArray(void);
+bool VHW::Write( SENTENCE& sentence )
+{
+//   ASSERT_VALID( this );
 
-  /*
-  ** NMEA 0183 Sentences we understand
-  */
+   /*
+   ** Let the parent do its thing
+   */
+   
+   RESPONSE::Write( sentence );
 
-  HDM Hdm;
-  HDG Hdg;
-  HDT Hdt;
-  VHW Vhw;
+   sentence += DegreesTrue;
+   sentence += _T("T");
+   sentence += DegreesMagnetic;
+   sentence += _T("M");
+   sentence += Knots;
+   sentence += _T("N");
+   sentence += KilometersPerHour;
+   sentence += _T("K");
 
-  wxString ErrorMessage;            // Filled when Parse returns FALSE
-  wxString LastSentenceIDParsed;    // ID of the lst sentence successfully parsed
-  wxString LastSentenceIDReceived;  // ID of the last sentence received, may not have parsed successfully
+   sentence.Finish();
 
-  wxString TalkerID;
-  wxString ExpandedTalkerID;
+   return( TRUE );
+}
 
-  //      MANUFACTURER_LIST Manufacturers;
+const VHW& VHW::operator = ( const VHW& source )
+{
+//   ASSERT_VALID( this );
 
-  virtual bool IsGood(void) const;
-  virtual bool Parse(void);
-  virtual bool PreParse(void);
+   DegreesTrue       = source.DegreesTrue;
+   DegreesMagnetic   = source.DegreesMagnetic;
+   Knots             = source.Knots;
+   KilometersPerHour = source.KilometersPerHour;
 
-  NMEA0183& operator<<(wxString& source);
-  NMEA0183& operator>>(wxString& destination);
-};
+   return( *this );
+}
 
 PLUGIN_END_NAMESPACE
-
-#endif  // NMEA_0183_CLASS_HEADER
